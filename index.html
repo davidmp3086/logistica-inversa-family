@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -838,7 +837,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200" id="listaUsuarios">
-                                        <tr>
+                                        <tr data-usuario-id="1">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900">María García</div>
                                                 <div class="text-sm text-gray-500">maria@tienda.com</div>
@@ -861,11 +860,11 @@
                                                 </label>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button class="btn-success px-3 py-1 rounded text-white text-xs mr-2">Dar Permiso</button>
-                                                <button class="text-red-600 hover:text-red-900">Bloquear</button>
+                                                <button class="dar-permiso btn-success px-3 py-1 rounded text-white text-xs mr-2" data-usuario-id="1">Dar Permiso</button>
+                                                <button class="bloquear-usuario text-red-600 hover:text-red-900" data-usuario-id="1">Bloquear</button>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr data-usuario-id="2">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900">Carlos Rodríguez</div>
                                                 <div class="text-sm text-gray-500">carlos@tienda.com</div>
@@ -888,11 +887,11 @@
                                                 </label>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button class="btn-warning px-3 py-1 rounded text-white text-xs mr-2">Quitar Permiso</button>
-                                                <button class="text-red-600 hover:text-red-900">Bloquear</button>
+                                                <button class="quitar-permiso btn-warning px-3 py-1 rounded text-white text-xs mr-2" data-usuario-id="2">Quitar Permiso</button>
+                                                <button class="bloquear-usuario text-red-600 hover:text-red-900" data-usuario-id="2">Bloquear</button>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr data-usuario-id="3">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900">Ana Martínez</div>
                                                 <div class="text-sm text-gray-500">ana@tienda.com</div>
@@ -915,8 +914,8 @@
                                                 </label>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button class="btn-success px-3 py-1 rounded text-white text-xs mr-2">Aprobar</button>
-                                                <button class="text-red-600 hover:text-red-900">Rechazar</button>
+                                                <button class="aprobar-usuario btn-success px-3 py-1 rounded text-white text-xs mr-2" data-usuario-id="3">Aprobar</button>
+                                                <button class="rechazar-usuario text-red-600 hover:text-red-900" data-usuario-id="3">Rechazar</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1061,9 +1060,9 @@
 
             // Usuarios registrados (simulación de base de datos)
             let usuarios = [
-                { email: "maria@tienda.com", nombre: "María García", tienda: "Family Cash Xàtiva", rol: "usuario", estado: "activo", permisos: { recepcion: false } },
-                { email: "carlos@tienda.com", nombre: "Carlos Rodríguez", tienda: "Family Cash Torrent", rol: "usuario", estado: "activo", permisos: { recepcion: true } },
-                { email: "ana@tienda.com", nombre: "Ana Martínez", tienda: "Family Cash Ontinyent", rol: "usuario", estado: "pendiente", permisos: { recepcion: false } }
+                { id: 1, email: "maria@tienda.com", nombre: "María García", tienda: "Family Cash Xàtiva", rol: "usuario", estado: "activo", permisos: { recepcion: false } },
+                { id: 2, email: "carlos@tienda.com", nombre: "Carlos Rodríguez", tienda: "Family Cash Torrent", rol: "usuario", estado: "activo", permisos: { recepcion: true } },
+                { id: 3, email: "ana@tienda.com", nombre: "Ana Martínez", tienda: "Family Cash Ontinyent", rol: "usuario", estado: "pendiente", permisos: { recepcion: false } }
             ];
 
             // Mapeo de valores de tiendas a nombres completos
@@ -1225,6 +1224,152 @@
                 document.getElementById('totalUsuarios').textContent = totalUsuarios;
             }
 
+            // Función para actualizar la lista de usuarios
+            function actualizarListaUsuarios() {
+                const tbody = document.getElementById('listaUsuarios');
+                tbody.innerHTML = '';
+                
+                usuarios.forEach(usuario => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-usuario-id', usuario.id);
+                    
+                    let accionesHtml = '';
+                    if (usuario.estado === 'pendiente') {
+                        accionesHtml = `
+                            <button class="aprobar-usuario btn-success px-3 py-1 rounded text-white text-xs mr-2" data-usuario-id="${usuario.id}">Aprobar</button>
+                            <button class="rechazar-usuario text-red-600 hover:text-red-900" data-usuario-id="${usuario.id}">Rechazar</button>
+                        `;
+                    } else {
+                        const permisoBtn = usuario.permisos.recepcion ? 
+                            `<button class="quitar-permiso btn-warning px-3 py-1 rounded text-white text-xs mr-2" data-usuario-id="${usuario.id}">Quitar Permiso</button>` :
+                            `<button class="dar-permiso btn-success px-3 py-1 rounded text-white text-xs mr-2" data-usuario-id="${usuario.id}">Dar Permiso</button>`;
+                            
+                        accionesHtml = `
+                            ${permisoBtn}
+                            <button class="bloquear-usuario text-red-600 hover:text-red-900" data-usuario-id="${usuario.id}">Bloquear</button>
+                        `;
+                    }
+                    
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${usuario.nombre}</div>
+                            <div class="text-sm text-gray-500">${usuario.email}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${usuario.tienda}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                Usuario que expide palets
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${usuario.estado === 'activo' ? 'bg-green-100 text-green-800' : usuario.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                ${usuario.estado.charAt(0).toUpperCase() + usuario.estado.slice(1)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-gray-600 focus:ring-gray-500" ${usuario.permisos.recepcion ? 'checked' : ''} ${usuario.estado !== 'activo' ? 'disabled' : ''}>
+                                <span class="ml-2 text-sm ${usuario.estado === 'activo' ? (usuario.permisos.recepcion ? 'text-gray-700' : 'text-gray-500') : 'text-gray-500'}">Recepción</span>
+                            </label>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            ${accionesHtml}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                // Añadir eventos a los nuevos botones
+                añadirEventosBotonesUsuarios();
+            }
+
+            // Función para añadir eventos a los botones de usuarios
+            function añadirEventosBotonesUsuarios() {
+                // Botones para dar permiso
+                document.querySelectorAll('.dar-permiso').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const usuarioId = parseInt(this.getAttribute('data-usuario-id'));
+                        const usuario = usuarios.find(u => u.id === usuarioId);
+                        if (usuario) {
+                            usuario.permisos.recepcion = true;
+                            showSuccessModal('Permiso Concedido', 
+                                `Se ha concedido permiso de recepción al usuario ${usuario.nombre}.`,
+                                'check-circle', 'green');
+                            actualizarListaUsuarios();
+                        }
+                    });
+                });
+
+                // Botones para quitar permiso
+                document.querySelectorAll('.quitar-permiso').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const usuarioId = parseInt(this.getAttribute('data-usuario-id'));
+                        const usuario = usuarios.find(u => u.id === usuarioId);
+                        if (usuario) {
+                            usuario.permisos.recepcion = false;
+                            showSuccessModal('Permiso Revocado', 
+                                `Se ha revocado el permiso de recepción al usuario ${usuario.nombre}.`,
+                                'alert-triangle', 'yellow');
+                            actualizarListaUsuarios();
+                        }
+                    });
+                });
+
+                // Botones para aprobar usuario
+                document.querySelectorAll('.aprobar-usuario').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const usuarioId = parseInt(this.getAttribute('data-usuario-id'));
+                        const usuario = usuarios.find(u => u.id === usuarioId);
+                        if (usuario) {
+                            usuario.estado = 'activo';
+                            showSuccessModal('Usuario Aprobado', 
+                                `El usuario ${usuario.nombre} ha sido aprobado y ahora puede acceder al sistema.`,
+                                'check-circle', 'green');
+                            actualizarListaUsuarios();
+                        }
+                    });
+                });
+
+                // Botones para rechazar usuario
+                document.querySelectorAll('.rechazar-usuario').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const usuarioId = parseInt(this.getAttribute('data-usuario-id'));
+                        const usuario = usuarios.find(u => u.id === usuarioId);
+                        if (usuario) {
+                            // En una implementación real, podríamos eliminar el usuario
+                            // Por ahora, solo mostramos un mensaje
+                            showSuccessModal('Usuario Rechazado', 
+                                `El usuario ${usuario.nombre} ha sido rechazado y no podrá acceder al sistema.`,
+                                'alert-octagon', 'red');
+                            
+                            // Podríamos eliminar el usuario después de confirmación
+                            setTimeout(() => {
+                                usuarios = usuarios.filter(u => u.id !== usuarioId);
+                                actualizarListaUsuarios();
+                            }, 1500);
+                        }
+                    });
+                });
+
+                // Botones para bloquear usuario
+                document.querySelectorAll('.bloquear-usuario').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const usuarioId = parseInt(this.getAttribute('data-usuario-id'));
+                        const usuario = usuarios.find(u => u.id === usuarioId);
+                        if (usuario) {
+                            const nuevoEstado = usuario.estado === 'activo' ? 'bloqueado' : 'activo';
+                            usuario.estado = nuevoEstado;
+                            
+                            showSuccessModal('Estado Actualizado', 
+                                `El estado del usuario ${usuario.nombre} ha sido actualizado a ${nuevoEstado}.`,
+                                nuevoEstado === 'activo' ? 'check-circle' : 'lock', 
+                                nuevoEstado === 'activo' ? 'green' : 'red');
+                            actualizarListaUsuarios();
+                        }
+                    });
+                });
+            }
+
             // Mostrar contenido de operario
             function showOperarioContent() {
                 document.getElementById('authScreen').classList.add('hidden');
@@ -1246,6 +1391,7 @@
                 document.getElementById('mainContentAdmin').classList.remove('hidden');
                 document.getElementById('mainContentOperario').classList.add('hidden');
                 actualizarContadores();
+                actualizarListaUsuarios();
                 
                 // Mostrar dashboard por defecto
                 document.getElementById('tabDashboard').click();
@@ -1360,7 +1506,9 @@
                     }
                     
                     // Agregar nuevo usuario (pendiente de aprobación)
+                    const nuevoId = Math.max(...usuarios.map(u => u.id)) + 1;
                     usuarios.push({
+                        id: nuevoId,
                         email: email,
                         nombre: nombre + ' ' + apellidos,
                         tienda: tiendaText,
@@ -1437,6 +1585,7 @@
                     document.getElementById('contentUsuarios').classList.remove('hidden');
                     document.getElementById('contentDashboard').classList.add('hidden');
                     document.getElementById('contentOperaciones').classList.add('hidden');
+                    actualizarListaUsuarios();
                 });
 
                 document.getElementById('tabOperaciones').addEventListener('click', function() {
@@ -1582,4 +1731,3 @@
         </script>
     </div>
 </body>
-</html>
